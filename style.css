@@ -12,7 +12,7 @@ body {
   align-items: center;
   height: 100vh; /* full viewport height */
   width: 100vw;  /* full viewport width */
-  background: transparent;
+  background: gray;
 }
 
 canvas {
