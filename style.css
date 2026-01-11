@@ -8,13 +8,29 @@ html, body {
 
 body {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh; /* full viewport height */
-  width: 100vw;  /* full viewport width */
+  min-height: 100vh;
   background: gray;
 }
 
 canvas {
   display: block;
+  margin: 0 auto;
+}
+
+#inputContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+#locationInput {
+  font-size: 1.2em;
+  padding: 0.5em;
+  width: 250px;
+  box-sizing: border-box;
+  text-align: center;
 }
