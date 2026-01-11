@@ -15,9 +15,6 @@ function setup() {
   nightFill = color(0);
 
   const inputBox = document.getElementById('locationInput');
-  inputBox.addEventListener('click', () => {
-    requestLocation();
-  });
   inputBox.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       parseInput();
@@ -49,14 +46,14 @@ function requestLocation() {
 function parseInput() {
   const inputBox = document.getElementById('locationInput');
   const value = inputBox.value.trim();
-  // Accepts: "lat, lon" or "lat lon"
-  let parts = value.split(/[\s,]+/);
-  if (parts.length === 2) {
+  try {
+    let parts = value.split(/[\s,]+/);
     let lat = parseFloat(parts[0]);
     let lon = parseFloat(parts[1]);
-    if (!isNaN(lat) && !isNaN(lon)) {
-      onLocationChanged(lat, lon);
-    }
+    if(isNaN(lat) || isNaN(lon)) throw new Error();
+    onLocationChanged(lat, lon);
+  } catch (e) {
+    requestLocation();
   }
 }
 
