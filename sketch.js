@@ -74,9 +74,7 @@ function drawSunset(lt, ln, tz, yr, cx, cy, r) {
       let sunsetDate = s.getSunset();
       let baseDate = new Date(c);
 
-      if (!sunsetDate) continue;
-
-      let sunset = sunsetDate.getTime() - baseDate.getTime();
+      let sunset = sunsetDate ? sunsetDate.getTime() - baseDate.getTime() : (24 * 60 * 60 * 1000);
 
       // Daylight saving time adjustment (not perfect, but similar logic)
       // Note: JS Date does not have inDaylightTime, so we skip or use a library if needed
@@ -109,9 +107,15 @@ function drawSunrise(lt, ln, tz, yr, cx, cy, r) {
       let sunriseDate = s.getSunrise();
       let baseDate = new Date(c);
 
+      //console.log(s);
+
+      if(s.isSunDown() || s.isSunUp()) {
+        //there is no sunrise => it is always nighttime
+      }
+
       if (!sunriseDate) continue;
 
-      let sunrise = sunriseDate.getTime() - baseDate.getTime();
+      let sunrise = sunriseDate ? sunriseDate.getTime() - baseDate.getTime() : (24 * 60 * 60 * 1000);
 
       // Daylight saving time adjustment (not perfect, see above)
       sunrise -= (tz * 60 * 60 * 1000);
