@@ -1,25 +1,62 @@
-let userLat = null;
-let userLon = null;
+let thisLat = null;
+let thisLon = null;
 
 let bgFill, dayFill, nightFill;
 
+let locationRequested = false;
+
 function setup() {
-  createCanvas(400, 400);
+  createCanvas(400, 400).parent('p5js');
+  frameRate(1);
   clear();
 
   bgFill = color(220);
   dayFill = color(255);
   nightFill = color(0);
 
-  // Request geolocation from the browser
-  if (navigator.geolocation) {
+  const inputBox = document.getElementById('locationInput');
+  inputBox.addEventListener('click', () => {
+    requestLocation();
+  });
+  inputBox.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      parseInput();
+    }
+  });
+}
+
+function onLocationChanged(lat, lon) {
+  console.log(`Location changed: ${lat}, ${lon}`);
+  if (lat !== null && lon !== null) {
+    thisLat = lat;
+    thisLon = lon;
+    document.getElementById('locationInput').value = `${thisLat.toFixed(3)}, ${thisLon.toFixed(3)}`;
+  }
+}
+
+function requestLocation() {
+  if (!locationRequested && navigator.geolocation) {
+    locationRequested = true;
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        userLat = pos.coords.latitude;
-        userLon = pos.coords.longitude;
+        onLocationChanged(pos.coords.latitude, pos.coords.longitude);
       },
       (err) => {}
     );
+  }
+}
+
+function parseInput() {
+  const inputBox = document.getElementById('locationInput');
+  const value = inputBox.value.trim();
+  // Accepts: "lat, lon" or "lat lon"
+  let parts = value.split(/[\s,]+/);
+  if (parts.length === 2) {
+    let lat = parseFloat(parts[0]);
+    let lon = parseFloat(parts[1]);
+    if (!isNaN(lat) && !isNaN(lon)) {
+      onLocationChanged(lat, lon);
+    }
   }
 }
 
@@ -28,7 +65,7 @@ function draw() {
 
   const currentYear = new Date().getFullYear();
   const tz = 0; //-new Date().getTimezoneOffset() / 60;  //but should ignore daylight saving time?
-  drawYear(userLat, userLon, tz, currentYear, width / 2, height / 2, min(width, height) / 2 - 20);
+  drawYear(thisLat, thisLon, tz, currentYear, width / 2, height / 2, min(width, height) / 2 - 20);
 }
 
 function drawYear(lt, ln, tz, yr, cx, cy, r) {
