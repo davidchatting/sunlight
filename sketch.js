@@ -78,6 +78,7 @@ function drawYear(lt, ln, tz, yr, cx, cy, r) {
 
   let sunrisePoints = [];
   let sunsetPoints = [];
+  let noonPoints = [];
 
   let c = new Date(Date.UTC(yr, 0, 1, 0, 0, 0));
   for (let n = 0; n < 365; ++n) {
@@ -105,6 +106,15 @@ function drawYear(lt, ln, tz, yr, cx, cy, r) {
       let pxSet = cx + ((r * st) * Math.cos(a));
       let pySet = cy + ((r * st) * Math.sin(a));
       sunsetPoints.push([pxSet, pySet]);
+
+      // Estimate apparent noon (midway between sunrise and sunset)
+      let noon = (rs + (st - rs) / 2);
+      // Handle wrap-around at midnight
+      if (st < rs) noon = (rs + ((st + 1) - rs) / 2);
+      if (noon > 1) noon -= 1;
+      let pxNoon = cx + ((r * noon) * Math.cos(a));
+      let pyNoon = cy + ((r * noon) * Math.sin(a));
+      noonPoints.push([pxNoon, pyNoon]);
     } catch (e) {
       // Ignore errors for missing sun events
     }
@@ -127,7 +137,20 @@ function drawYear(lt, ln, tz, yr, cx, cy, r) {
     endContour();
   endShape(CLOSE);
 
+  // Draw apparent noon as a dotted line
+  stroke(0);
+  strokeWeight(1);
+  drawingContext.setLineDash([4, 6]);
+  noFill();
+  beginShape();
+    for (let i = 0; i < noonPoints.length; i++) {
+      vertex(noonPoints[i][0], noonPoints[i][1]);
+    }
+  endShape(CLOSE);
+  drawingContext.setLineDash([]); // Reset dash
+
   // Draw center point
+  noStroke();
   fill(bgFill);
   ellipse(cx, cy, 2, 2);
 }
